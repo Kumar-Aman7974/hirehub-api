@@ -12,4 +12,6 @@ public class AuthResponse {
     private String tokenType = "Bearer";
     private UserResponse user;
 
+    private long expiresIn; // seconds until the access token expires
+
 }

@@ -111,7 +111,13 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Current user not found"));
     }
 
-    private UserResponse mapToUserResponse(User user) {
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUserProfile() {
+        User user = getCurrentUser();
+        return mapToUserResponse(user);
+    }
+
+    public UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
