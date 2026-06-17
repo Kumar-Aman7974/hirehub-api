@@ -67,4 +67,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("An unexpected error occurred: " + ex.getMessage()));
     }
 
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalState(IllegalStateException ex) {
+        log.error("Illegal state: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
 }

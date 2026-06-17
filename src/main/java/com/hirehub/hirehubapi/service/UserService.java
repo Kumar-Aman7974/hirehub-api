@@ -129,4 +129,10 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
+
+    // For internal use only (to avoid circular dependency)
+    public User getUserByIdForInternal(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
 }
