@@ -10,6 +10,7 @@ import com.hirehub.hirehubapi.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
+
 
     @Transactional
     public UserResponse registerUser(RegisterRequest request) {
@@ -55,6 +60,12 @@ public class UserService {
         User savedUser = userRepository.save(user);
         log.info("New user registered: {} with role: {}", savedUser.getEmail(), savedUser.getRole());
 
+        // Send welcome email (async - doesn't affect response)
+        try {
+            emailService.sendWelcomeEmail(savedUser);
+        } catch (Exception e) {
+            log.warn("Failed to send welcome email to: {}", savedUser.getEmail(), e);
+        }
         return mapToUserResponse(savedUser);
     }
 

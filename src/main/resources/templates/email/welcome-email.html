@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base-email :: html}">
+<head>
+    <title>Welcome to HireHub</title>
+</head>
+<body>
+<div th:fragment="content">
+    <h2>Welcome to HireHub, <span th:text="${userName}">User</span>!</h2>
+
+    <p>We're thrilled to have you on board! Your journey to finding the perfect job or the ideal candidate starts now.</p>
+
+    <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0;"><strong>Account Details:</strong></p>
+        <p style="margin: 5px 0;">Email: <span th:text="${email}">user@example.com</span></p>
+        <p style="margin: 5px 0;">Role: <span th:text="${role}">JOB_SEEKER</span></p>
+    </div>
+
+    <p>Here's what you can do next:</p>
+    <ul>
+        <li th:if="${role == 'JOB_SEEKER'}">Browse and apply to jobs that match your skills</li>
+        <li th:if="${role == 'EMPLOYER'}">Post job openings and find top talent</li>
+        <li th:if="${role == 'ADMIN'}">Manage the platform and help others succeed</li>
+        <li>Track your applications or job postings</li>
+    </ul>
+
+    <div style="text-align: center;">
+        <a href="http://localhost:8080/api/auth/login" class="button">Get Started Now →</a>
+    </div>
+
+    <p>If you have any questions, we're here to help!</p>
+    <p>Cheers,<br><strong>The HireHub Team</strong></p>
+</div>
+</body>
+</html>

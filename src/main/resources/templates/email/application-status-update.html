@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base-email :: html}">
+<head>
+    <title>Application Status Update</title>
+</head>
+<body>
+<div th:fragment="content">
+    <h2>Application Status Update</h2>
+
+    <p>Hi <span th:text="${jobSeekerName}">Job Seeker</span>,</p>
+
+    <p>There has been an update on your application for <strong><span th:text="${jobTitle}">Job Title</span></strong> at <strong><span th:text="${companyName}">Company</span></strong>.</p>
+
+    <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <p style="margin: 0; color: #6B7280;">Current Status</p>
+        <span class="status-badge"
+              style="background: #10B981; color: #FFFFFF; font-size: 20px; padding: 10px 30px;"
+              th:style="'background:' + ${statusColor} + '; color: #FFFFFF;'"
+              th:text="${status}">HIRED</span>
+        <p style="margin: 10px 0 0; color: #4B5563;" th:text="${statusMessage}">Status Message</p>
+    </div>
+
+    <div th:if="${status == 'INTERVIEWING'}">
+        <div style="background: #EBF5FF; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <h4 style="margin: 0;">📅 Interview Details</h4>
+            <p style="margin: 5px 0;">Date & Time: <span th:text="${interviewDate}">February 15, 2024 2:00 PM</span></p>
+        </div>
+    </div>
+
+    <div th:if="${status == 'REJECTED'}">
+        <div style="background: #FEE2E2; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <h4 style="margin: 0; color: #991B1B;">Feedback</h4>
+            <p style="margin: 5px 0; color: #7F1D1D;" th:text="${notes}">We appreciate your interest...</p>
+        </div>
+    </div>
+
+    <div th:if="${status == 'HIRED'}">
+        <div style="background: #D1FAE5; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <h2 style="margin: 0; color: #065F46;">🎉 Congratulations!</h2>
+            <p style="color: #065F46;">You've been hired! The employer will reach out soon with next steps.</p>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="http://localhost:8080/api/applications/my-applications" class="button">View All Applications</a>
+    </div>
+
+    <p>Best regards,<br><strong>The HireHub Team</strong></p>
+</div>
+</body>
+</html>

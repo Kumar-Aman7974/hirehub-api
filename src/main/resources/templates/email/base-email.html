@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireHub Email</title>
+    <style>
+        /* Email client styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F3F4F6;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #1E3A5F;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #FFFFFF;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .footer {
+            background: #F9FAFB;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #E5E7EB;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            background: #1E3A5F;
+            color: #FFFFFF !important;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background: #15304F;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .divider {
+            border: none;
+            height: 1px;
+            background: #E5E7EB;
+            margin: 20px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>🏢 HireHub</h1>
+        <p style="color: #93C5FD; margin: 5px 0 0;">Your Career Connection</p>
+    </div>
+
+    <!-- Content -->
+    <div class="content" th:remove="tag">
+        <!-- This will be replaced by child templates -->
+        <div th:if="${content}" th:utext="${content}"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© <span th:text="${currentYear}">2024</span> HireHub. All rights reserved.</p>
+        <p style="font-size: 12px; color: #9CA3AF;">
+            This email was sent to <span th:text="${email}">user@example.com</span>
+        </p>
+        <p style="font-size: 12px; color: #9CA3AF;">
+            If you didn't request this email, please ignore it.
+        </p>
+    </div>
+</div>
+</body>
+</html>

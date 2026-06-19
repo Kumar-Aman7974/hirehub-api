@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{email/base-email :: html}">
+<head>
+    <title>New Application Received</title>
+</head>
+<body>
+<div th:fragment="content">
+    <h2>📝 New Application Received!</h2>
+
+    <p>Hi <span th:text="${employerName}">Employer</span>,</p>
+
+    <p>You have received a new application for the position:</p>
+
+    <div style="background: #EBF5FF; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #1E3A5F;">
+        <h3 style="margin: 0; color: #1E3A5F;" th:text="${jobTitle}">Senior Java Developer</h3>
+        <p style="margin: 5px 0 0; color: #4B5563;">Applied on: <span th:text="${appliedDate}">January 15, 2024</span></p>
+    </div>
+
+    <div style="background: #FEF3C7; padding: 20px; border-radius: 8px; margin: 15px 0;">
+        <h4 style="margin: 0; color: #92400E;">Applicant Information</h4>
+        <p style="margin: 5px 0;"><strong>Name:</strong> <span th:text="${applicantName}">John Doe</span></p>
+        <hr class="divider">
+        <h4 style="margin: 0; color: #92400E;">Cover Letter Excerpt</h4>
+        <p style="margin: 5px 0; font-style: italic; color: #4B5563;" th:text="${coverLetterExcerpt}">
+            I am writing to express my strong interest in the Senior Java Developer position...
+        </p>
+    </div>
+
+    <p><strong>Next steps:</strong></p>
+    <ul>
+        <li>📋 Review the full application and resume</li>
+        <li>📝 Update application status (Review, Interview, Hire, Reject)</li>
+        <li>📧 Communicate directly with the candidate</li>
+    </ul>
+
+    <div style="text-align: center;">
+        <a href="http://localhost:8080/api/applications/job/1" class="button">Review Applications Now</a>
+    </div>
+
+    <p>Good luck finding your ideal candidate!</p>
+    <p><strong>The HireHub Team</strong></p>
+</div>
+</body>
+</html>

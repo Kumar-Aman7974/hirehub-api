@@ -12,6 +12,7 @@ import com.hirehub.hirehubapi.repository.ApplicationRepository;
 import com.hirehub.hirehubapi.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,7 +33,9 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final UserService userService;
-    private final EmailService emailService; // Will implement Day 6
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Apply for a job
@@ -85,11 +88,24 @@ public class ApplicationService {
         log.info("New application submitted: {} for job: {} by: {}",
                 savedApplication.getId(), job.getTitle(), currentUser.getEmail());
 
-        // Send notification (async - will implement Day 6)
+        // Send email notifications (async)
         try {
-            emailService.sendApplicationConfirmation(currentUser.getEmail(), job.getTitle());
-            emailService.sendNewApplicationNotification(job.getEmployer().getEmail(),
-                    currentUser.getFirstName(), job.getTitle());
+            // To job seeker
+            emailService.sendApplicationConfirmation(
+                    currentUser.getEmail(),
+                    job.getTitle(),
+                    job.getEmployer().getCompanyName()
+            );
+
+            // To employer
+            emailService.sendNewApplicationNotification(
+                    job.getEmployer().getEmail(),
+                    currentUser.getFirstName() + " " + currentUser.getLastName(),
+                    job.getTitle(),
+                    request.getCoverLetter().length() > 100 ?
+                            request.getCoverLetter().substring(0, 100) + "..." :
+                            request.getCoverLetter()
+            );
         } catch (Exception e) {
             log.warn("Failed to send email notifications: {}", e.getMessage());
         }
@@ -210,17 +226,13 @@ public class ApplicationService {
                     application.getJobSeeker().getEmail(),
                     application.getJob().getTitle(),
                     newStatus,
-                    statusUpdate.getRejectionReason()
+                    application.getJob().getEmployer().getCompanyName(),
+                    statusUpdate.getAdditionalNotes(),
+                    statusUpdate.getInterviewDate() != null ?
+                            statusUpdate.getInterviewDate().toString() : null
             );
         } catch (Exception e) {
             log.warn("Failed to send status update email: {}", e.getMessage());
-        }
-
-        // If status is HIRED, update job status maybe?
-        if (newStatus == ApplicationStatus.HIRED) {
-            // Could send additional notifications or update job
-            log.info("Application {} resulted in hire for job: {}",
-                    applicationId, application.getJob().getTitle());
         }
 
         return mapToResponse(updatedApplication);
