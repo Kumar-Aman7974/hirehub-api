@@ -13,7 +13,10 @@ public class ApplicationRequest {
 
     @NotBlank(message = "Cover letter is required")
     @Size(min = 50, max = 2000, message = "Cover letter must be between 50 and 2000 characters")
-    private String coverLetter;
+    private String ResumeFileId;
+    private  String coverLetter;
 
     private String resumeUrl; // Could be uploaded file URL
+
+
 }

@@ -80,6 +80,9 @@ public class Application {
     @Column(name = "is_active")
     private boolean isActive = true;
 
+    @Column(name = "resume_file_id")
+    private String resumeFileId;  // Reference to uploaded resume
+
     // Helper method to update status
     public void updateStatus(ApplicationStatus newStatus) {
         if (this.status.isTerminal()) {

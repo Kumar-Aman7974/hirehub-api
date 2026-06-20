@@ -28,7 +28,7 @@ import static com.hirehub.hirehubapi.enums.ApplicationStatus.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+
 public class EmailService {
 
     // Make mail and template engine optional so app can start without mail configuration
@@ -135,11 +135,8 @@ public class EmailService {
         }
     }
 
-    // ========== SPECIFIC EMAIL METHODS ==========
 
-    /**
-     * Send welcome email to new user
-     */
+
     public void sendWelcomeEmail(User user) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("userName", user.getFirstName() + " " + user.getLastName());
@@ -180,9 +177,7 @@ public class EmailService {
         sendEmail(emailRequest);
     }
 
-    /**
-     * Send new application notification to employer
-     */
+
     public void sendNewApplicationNotification(String employerEmail, String applicantName,
                                                String jobTitle, String coverLetterExcerpt) {
         Map<String, Object> variables = new HashMap<>();
@@ -203,9 +198,7 @@ public class EmailService {
         sendEmail(emailRequest);
     }
 
-    /**
-     * Send application status update to job seeker
-     */
+
     public void sendApplicationStatusUpdate(String jobSeekerEmail, String jobTitle,
                                             ApplicationStatus status, String companyName,
                                             String notes, String interviewDate) {

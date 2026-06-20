@@ -70,12 +70,14 @@ public class ApplicationService {
             throw new IllegalStateException("You have already applied for this job");
         }
 
-        // Create application
+        // If resume file ID is provided, use it
+        String resumeFileId = request.getResumeFileId();
+
         Application application = Application.builder()
                 .job(job)
                 .jobSeeker(currentUser)
                 .coverLetter(request.getCoverLetter())
-                .resumeUrl(request.getResumeUrl() != null ? request.getResumeUrl() : currentUser.getResumeUrl())
+                .resumeFileId(resumeFileId)  // Store file reference
                 .status(ApplicationStatus.PENDING)
                 .build();
 

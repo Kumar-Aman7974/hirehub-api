@@ -69,9 +69,14 @@ public class User  implements UserDetails {
     @Column(name = "company_name")
     private String companyName;
 
-    // Resume URL (only for JOB_SEEKER role)
     @Column(name = "resume_url")
     private String resumeUrl;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    @Column(name = "company_logo_url")
+    private String companyLogoUrl;
 
     @PrePersist
     protected void onCreate() {
