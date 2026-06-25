@@ -7,6 +7,9 @@ import com.hirehub.hirehubapi.dto.JobRequest;
 import com.hirehub.hirehubapi.dto.JobResponse;
 import com.hirehub.hirehubapi.dto.JobSearchRequest;
 import com.hirehub.hirehubapi.service.JobService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,15 +24,22 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/jobs")
 @RequiredArgsConstructor
+@Tag(name = "job Management", description = "APIs for managing job postings")
+@SecurityRequirement(name = "Bearer Authentication")
 public class JobController {
 
     private final JobService jobService;
 
-    /**
-     * Create new job posting
-     * POST /api/jobs
-     * Access: EMPLOYER, ADMIN
-     */
+    @Operation(
+            summary = "Create a new job posting",
+            description = "Creates a new job posting. Only employers and admins can create jobs."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201",
+                    description = "Job created successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403",
+                    description = "Access denied (not employer/admin)")
+    })
     @PostMapping
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
     public ResponseEntity<ApiResponse<JobResponse>> createJob(@Valid @RequestBody JobRequest request) {
@@ -38,13 +48,31 @@ public class JobController {
                 .body(ApiResponse.success("Job posted successfully", job));
     }
 
-
+    @Operation(
+            summary = "Get job by ID",
+            description = "Retrieves a specific job by its ID. Also increments view count."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+                    description = "Job found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404",
+                    description = "Job not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<JobResponse>> getJobById(@PathVariable Long id) {
         JobResponse job = jobService.getJobById(id);
         return ResponseEntity.ok(ApiResponse.success("Job retrieved successfully", job));
     }
 
+    @Operation(
+            summary = "Get all jobs with filters",
+            description = "Retrieves paginated list of jobs with optional filters for keyword, " +
+                    "location, job type, and salary range."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+                    description = "Jobs retrieved successfully")
+    })
     /**
      * Get all jobs with filters and pagination
      * GET /api/jobs?page=0&size=10&keyword=java&location=NYC
@@ -84,6 +112,10 @@ public class JobController {
     }
 
 
+    @Operation(
+            summary = "Get jobs posted by current employer",
+            description = "Retrieves all job posted by the currently authenticated employer."
+    )
     @GetMapping("/my-jobs")
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Page<JobResponse>>> getMyJobs(
@@ -95,6 +127,10 @@ public class JobController {
     }
 
 
+    @Operation(
+            summary = "Update a job posting",
+            description = "Updates an existing job posting. Only the job owner or admin can update."
+    )
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
     public ResponseEntity<ApiResponse<JobResponse>> updateJob(
@@ -104,7 +140,10 @@ public class JobController {
         return ResponseEntity.ok(ApiResponse.success("Job updated successfully", job));
     }
 
-
+    @Operation(
+            summary = "Delete a job posting",
+            description = "Soft deletes a job posting. Only the job owner or admin can delete."
+    )
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteJob(@PathVariable Long id) {
@@ -112,7 +151,10 @@ public class JobController {
         return ResponseEntity.ok(ApiResponse.success("Job deleted successfully", null));
     }
 
-
+    @Operation(
+            summary = "Get job by id",
+            description = "Get your job by using id like- 1,2, 3, 4, 5."
+    )
     @GetMapping("/employer/{employerId}")
     public ResponseEntity<ApiResponse<Page<JobResponse>>> getJobsByEmployer(
             @PathVariable Long employerId,
@@ -123,6 +165,10 @@ public class JobController {
         return ResponseEntity.ok(ApiResponse.success("Employer jobs retrieved successfully", jobs));
     }
 
+    @Operation(
+            summary = "Get job statistics for dashboard",
+            description = "SStatistics retrieved successfully. Only the job owner or admin can do this."
+    )
     /**
      * Get job statistics for dashboard
      * GET /api/jobs/statistics

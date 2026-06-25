@@ -48,7 +48,7 @@ public class FileStorageConfig {
         }
 
         System.out.println("========================================");
-        System.out.println("  📁 File Storage Configuration         ");
+        System.out.println("   File Storage Configuration         ");
         System.out.println("  Upload Directory: " + uploadDirFile.getAbsolutePath());
         System.out.println("  Max File Size: " + maxFileSize / (1024 * 1024) + "MB");
         System.out.println("  Allowed Types: " + allowedTypes);

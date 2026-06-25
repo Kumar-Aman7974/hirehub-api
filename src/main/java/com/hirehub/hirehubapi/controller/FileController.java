@@ -5,6 +5,13 @@ import com.hirehub.hirehubapi.dto.FileMetadataResponse;
 import com.hirehub.hirehubapi.dto.FileUploadResponse;
 import com.hirehub.hirehubapi.enums.FileCategory;
 import com.hirehub.hirehubapi.service.FileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -23,11 +30,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/files")
 @RequiredArgsConstructor
+@Tag(name = "File Management", description = "APIs for file upload and download")
+@SecurityRequirement(name = "Bearer Authentication")
 public class FileController {
 
     private final FileService fileService;
 
-    //Upload a file, Access: Authentication users
+
+    @Operation (
+            summary = "Upload a file",
+            description = "Upload a file to the server. Supports resumes," +
+                    " profit pictures, and company logos."
+    )
+
+    @ApiResponses( value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse (responseCode = "200",
+            description = "File upload successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "400",
+            description = "Invalid file type or size exceeded",
+
+                        content = @Content(mediaType = "application/json",
+                        examples = @ExampleObject(value = """
+                                {
+                                "success": false,
+                                "message": "File size exceeds 5MB limit",
+                                "timestamp": "2026-06-23T10:30:00"
+                                }
+                                
+                                """))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "413",
+            description = "File too large")
+    })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FileUploadResponse>> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -41,6 +74,10 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("File uploaded successfully", response));
     }
 
+    @Operation(
+            summary = "Upload resume",
+            description = "Uploads a resume for job applications. Only job seekers can upload."
+    )
     // Upload resume for job application
     @PostMapping(value = "/upload/resume", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('JOB_SEEKER')")
@@ -51,11 +88,16 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("Resume uploaded successfully", response));
     }
 
-    /**
-     * Upload profile picture
-     * POST /api/files/upload/profile-picture
-     * Access: Authenticated users
-     */
+    @Operation(
+            summary = "Download file",
+            description = "Downloads a file by its unique file ID."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+                    description = "File downloaded successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404",
+                    description = "File not found")
+    })
     @PostMapping(value = "/upload/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<FileUploadResponse>> uploadProfilePicture(
             @RequestParam("file") MultipartFile file) {
@@ -64,11 +106,10 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("Profile picture uploaded successfully", response));
     }
 
-    /**
-     * Upload company logo
-     * POST /api/files/upload/company-logo
-     * Access: EMPLOYER, ADMIN
-     */
+    @Operation(
+            summary = "Upload company logo",
+            description = "Upload a company logo, Only EMPLOYER and ADMIN can access it"
+    )
     @PostMapping(value = "/upload/company-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('EMPLOYER', 'ADMIN')")
     public ResponseEntity<ApiResponse<FileUploadResponse>> uploadCompanyLogo(
@@ -78,13 +119,21 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("Company logo uploaded successfully", response));
     }
 
-    /**
-     * Download file by file ID
-     * GET /api/files/download/{fileId}
-     * Access: Authenticated users (with permission)
-     */
+    @Operation(
+            summary = "Download file",
+            description = "Download file by id"
+    )
+
+    @ApiResponses ( value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+            description = "File downloaded successfully"),
+
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404",
+            description = "File not found")
+    })
     @GetMapping("/download/{fileId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) {
+    public ResponseEntity<Resource> downloadFile(@Parameter(description = "File ID", required = true, example = "2312")
+                                                     @PathVariable String fileId) {
         Resource resource = fileService.downloadFile(fileId);
 
         // Get content type from file name or default
@@ -103,11 +152,10 @@ public class FileController {
                 .body(resource);
     }
 
-    /**
-     * Get file metadata
-     * GET /api/files/metadata/{fileId}
-     * Access: Authenticated users
-     */
+    @Operation(
+            summary = "Get file metadata",
+            description = "get file metadata by id and Only authenticated user can access"
+    )
     @GetMapping("/metadata/{fileId}")
     public ResponseEntity<ApiResponse<FileMetadataResponse>> getFileMetadata(
             @PathVariable String fileId) {
@@ -116,22 +164,20 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("File metadata retrieved", null));
     }
 
-    /**
-     * Delete file
-     * DELETE /api/files/{fileId}
-     * Access: Authenticated users (owner)
-     */
+    @Operation(
+            summary = "delete file data",
+            description = "delete file data by fileId and Only owner can access it"
+    )
     @DeleteMapping("/{fileId}")
     public ResponseEntity<ApiResponse<Void>> deleteFile(@PathVariable String fileId) {
         fileService.deleteFile(fileId);
         return ResponseEntity.ok(ApiResponse.success("File deleted successfully", null));
     }
 
-    /**
-     * Get my files (all categories)
-     * GET /api/files/my-files
-     * Access: Authenticated users
-     */
+    @Operation(
+            summary = "Get all file metadata",
+            description = "get all list of  file metadata"
+    )
     @GetMapping("/my-files")
     public ResponseEntity<ApiResponse<List<FileMetadataResponse>>> getMyFiles() {
         // We need to add a method to FileService for this
@@ -139,6 +185,10 @@ public class FileController {
         return ResponseEntity.ok(ApiResponse.success("My files retrieved", null));
     }
 
+    @Operation(
+            summary = "Get file metadata",
+            description = "get file metadata by category and Only authenticated user can access"
+    )
     /**
      * Get files by category
      * GET /api/files/category/{category}

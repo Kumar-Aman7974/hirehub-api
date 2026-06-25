@@ -45,8 +45,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",           // Login, register
                                 "/api/test/**",           // Test endpoints
-                                "/swagger-ui/**",         // Swagger UI
-                                "/v3/api-docs/**",        // API docs
+                                // Swagger UI related paths
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",           // ← ADD THIS
+                                "/v3/api-docs/**",            // ← API docs JSON
+                                "/v3/api-docs.yaml",          // ← YAML variant
+                                "/api-docs/**",               // using custom path
+
+
                                 "/actuator/health"        // Health check
                         ).permitAll()
 
